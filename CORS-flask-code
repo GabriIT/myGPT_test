@@ -1,0 +1,29 @@
+
+app = Flask(__name__)
+CORS(app, resources={r"/*": {"origins": "*"}})
+
+@app.route('/')
+def index():
+    # Your code to render index.html goes here
+    return render_template('index.html')
+
+@app.route('/process', methods=['POST'])
+def process_data():
+    data = request.json  # Assuming JSON data is sent in the POST request
+    # Your code to process the data goes here
+    return jsonify({'message': 'Data processed successfully'})
+    
+    @app.route('/process', methods=['OPTIONS'])
+def handle_options():
+    # Set the CORS headers to allow all origins
+    headers = {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'POST',
+        'Access-Control-Allow-Headers': 'Content-Type'
+    }
+    return '', 204, headers
+    
+    if __name__ == '__main__':
+    app.run()
+
+

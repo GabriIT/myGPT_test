@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Material Selection Assistant</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container mt-5">
+        <h2>Your Material Knowledge Assistant</h2>
+        <form id="user_prompt">
+            <div class="form-group">
+                <label for="name">QUESTION</label>
+                <input type="text" class="form-control" id="name" placeholder="Enter a question">
+            </div>
+            <!-- <div class="form-group">
+                <label for="surname">Surname:</label>
+                <input type="text" class="form-control" id="surname" placeholder="Enter surname">
+            </div> -->
+            <button type="submit" class="btn btn-primary" id="submitButton">Submit</button>
+        </form>
+    </div>
+
+    <!-- Modal for displaying response -->
+    <div class="modal fade" id="responseModal" tabindex="-1" role="dialog" aria-labelledby="responseModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="responseModalLabel">Response</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body" id="responseModalBody">
+                    <!-- Response will be displayed here -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Temporary pop-up for "Waiting for the response..." -->
+    <div class="modal" id="loadingModal" tabindex="-1" role="dialog" aria-labelledby="loadingModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-body text-center">
+                    <p>Waiting for the response...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <script>
+        $(document).ready(function(){
+            $('#user_prompt').submit(function(e){
+                e.preventDefault(); // Prevent default form submission
+                $('#loadingModal').modal('show'); // Show the loading modal
+                setTimeout(function() {
+                    var name = $('#name').val();
+                    // var surname = $('#surname').val();
+                    $.ajax({
+                        type: 'POST',
+                        url: 'http://localhost:5000/', //'/generate_name',
+                        contentType: 'application/json',
+                        data: JSON.stringify({name: name}),    //, surname: surname}),
+                        success: function(response) {
+                            $('#loadingModal').modal('hide'); // Hide the loading modal
+                            $('#responseModalBody').text(response.result);
+                            $('#responseModal').modal('show');
+                        },
+                        error: function(xhr, status, error) {
+                            $('#loadingModal').modal('hide'); // Hide the loading modal
+                            $('#responseModalBody').text(xhr.responseText);
+                            $('#responseModal').modal('show');
+                        }
+                    });
+                }, 1500); // Wait for 1.5 seconds before sending the request
+            });
+        });
+    </script>
+</body>
+</html>
